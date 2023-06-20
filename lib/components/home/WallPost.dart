@@ -215,9 +215,10 @@ class _WallPostState extends State<WallPost> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        // borderRadius: BorderRadius.circular(10),
+      decoration: BoxDecoration(
+        color:
+            //if dark mode is enabled
+            Theme.of(context).colorScheme.primary,
       ),
       margin: const EdgeInsets.only(top: 1, left: 1, right: 1),
       padding: const EdgeInsets.only(left: 25, right: 25, top: 15, bottom: 15),
@@ -237,9 +238,10 @@ class _WallPostState extends State<WallPost> {
                       Text(
                         widget.user,
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
-                            color: Theme.of(context).colorScheme.onSurface),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                       const Text(" · "),
                       Text(

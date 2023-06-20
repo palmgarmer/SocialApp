@@ -1,18 +1,12 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:social_app/components/home/WallPost.dart';
 import 'package:social_app/Screen/features/profiles/editProfilePage.dart';
+import 'package:social_app/components/home/WallPost.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-
-  void _signOutUser() async {
-    await FirebaseAuth.instance.signOut();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,60 +23,17 @@ class ProfilePage extends StatelessWidget {
       return timeAgo;
     }
 
-    // edit field
-    Future<void> editField(String field) async {
-      String? newValue = "";
-      await showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Edit $field'),
-          content: TextField(
-            decoration: InputDecoration(
-              hintText: 'Enter new $field',
-            ),
-            onChanged: (value) {
-              // if field is empty, use current value
-              newValue = value;
-            },
-          ),
-          actions: [
-            // cancel button
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancel'),
-            ),
-            // save button
-            TextButton(
-              onPressed: () => {
-                Navigator.of(context).pop(newValue),
-              },
-              child: Text('Save'),
-            ),
-          ],
-        ),
-      );
-
-      // if new value is not empty, update field
-      if (newValue != "" || newValue != null) {
-        await userCollection.doc(user!.email).update({
-          field: newValue,
-        });
-      }
-    }
-
     void postMassage() {
       // post massage if text is not empty
       if (user!.displayName == null) {
         // use display name from collection if user has not set display name
-        userCollection.doc(user!.email).get().then(
+        userCollection.doc(user.email).get().then(
           (value) {
             if (value.exists && textController.text.isNotEmpty) {
               FirebaseFirestore.instance.collection("User Post").add({
                 "massage": textController.text,
                 "TimeStamp": DateTime.now(),
-                "UserEmail": user!.email,
+                "UserEmail": user.email,
                 "User": value.data()!['username'],
                 "Likes": [],
               });
@@ -95,8 +46,8 @@ class ProfilePage extends StatelessWidget {
           FirebaseFirestore.instance.collection("User Post").add({
             "massage": textController.text,
             "TimeStamp": DateTime.now(),
-            "UserEmail": user!.email,
-            "User": user!.displayName,
+            "UserEmail": user.email,
+            "User": user.displayName,
             "Likes": [],
           });
           textController.clear();
@@ -106,13 +57,25 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "P R O F I L E",
-          style: TextStyle(
-            color: Colors.black,
-          ),
+        title: Column(
+          children: [
+            Text(
+              "P R O F I L E",
+              style: TextStyle(
+                color:
+                    // if dark mode, use white
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
+            ),
+          ],
         ),
-        backgroundColor: Colors.white,
+        backgroundColor:
+            // if dark mode, use black
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : Colors.white,
         // edit profile button
         actions: [
           IconButton(
@@ -134,73 +97,45 @@ class ProfilePage extends StatelessWidget {
         ],
       ),
       body: Container(
-        color: Colors.grey[200],
+        color:
+            // if dark mode, use black
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : Colors.white,
         child: Column(
           children: [
-            Row(
-              children: [
-                // profile picture
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  child: CircleAvatar(
-                    radius: 30,
-                    backgroundImage: NetworkImage(
-                      // if user has profile picture, use it
-                      user!.photoURL ?? 'https://shorturl.at/pvBMR',
-                    ),
-                  ),
+            // Profile Pic
+            Container(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: CircleAvatar(
+                radius: 40,
+                backgroundImage: NetworkImage(
+                  // if user has profile picture, use it
+                  user!.photoURL ?? 'https://shorturl.at/pvBMR',
                 ),
-                // user name
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // user name
-                        Row(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                StreamBuilder(
-                                  builder: (context, snapshot) {
-                                    return Text(
-                                      snapshot.hasData
-                                          ? snapshot.data!['username']
-                                          : 'Loading...',
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    );
-                                  },
-                                  stream: userCollection
-                                      .doc(user.email)
-                                      .snapshots(),
-                                ),
-                                const SizedBox(
-                                  height: 2,
-                                ),
-                                // user email
-                                Text(
-                                  user.email!,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
+            ),
+            // Profile Name
+            Text(
+              user.displayName == null
+                  ? "Loading..."
+                  : user.displayName.toString(),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            // Profile Email
+            Text(
+              user.email.toString(),
+              style: TextStyle(
+                fontSize: 10,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(
+              height: 30,
             ),
             // My Posts
             Expanded(
@@ -216,7 +151,7 @@ class ProfilePage extends StatelessWidget {
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           final post = snapshot.data!.docs[index];
-                          if (post['UserEmail'] == user!.email) {
+                          if (post['UserEmail'] == user.email) {
                             return WallPost(
                               massage: post['massage'],
                               user: post['User'],

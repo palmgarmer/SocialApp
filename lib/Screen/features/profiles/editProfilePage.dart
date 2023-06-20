@@ -37,14 +37,14 @@ class EditProfilePage extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             // save button
             TextButton(
               onPressed: () => {
                 Navigator.of(context).pop(newValue),
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         ),
@@ -61,11 +61,7 @@ class EditProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color:
-              // if dark mode is enabled, then use white color
-              Brightness.dark == Theme.of(context).brightness
-                  ? Colors.white
-                  : Colors.grey,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         title: Text(
           "P R O F I L E",
@@ -73,88 +69,93 @@ class EditProfilePage extends StatelessWidget {
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.background,
       ),
-      body: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection("Users")
-            .doc(user!.email)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            // get user data
-            final userData = snapshot.data!.data() as Map<String, dynamic>;
+      body: Container(
+        color: Theme.of(context).colorScheme.background,
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection("Users")
+              .doc(user!.email)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              // get user data
+              final userData = snapshot.data!.data() as Map<String, dynamic>;
 
-            return ListView(
-              children: [
-                const SizedBox(height: 50),
-                // user profile
-                Center(
-                  child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage(
-                        // if user profile pic is empty, use default image
-                        userData['profilePic'] == ""
-                            ? "https://shorturl.at/pvBMR"
-                            : userData['profilePic'],
-                      )),
-                ),
-                const SizedBox(height: 20),
-
-                // user name
-                Center(
-                  child: Text(
-                    userData['username'],
-                    style: const TextStyle(
-                      fontSize: 15,
+              return ListView(
+                children: [
+                  const SizedBox(height: 50),
+                  // user profile
+                  Center(
+                    child: CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(
+                          // if user profile pic is empty, use default image
+                          userData['profilePic'] == ""
+                              ? "https://shorturl.at/pvBMR"
+                              : userData['profilePic'],
+                        )),
+                  ),
+                  const SizedBox(height: 20),
+                  // user name
+                  Center(
+                    child: Text(
+                      userData['username'],
+                      style: const TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 50),
+                  const SizedBox(height: 50),
 
-                // user detail
-                Padding(
-                  padding: const EdgeInsets.only(left: 30),
-                  child: Text('My detail'),
-                ),
+                  // user detail
+                  const Padding(
+                    padding: EdgeInsets.only(left: 30),
+                    child: Text('My detail'),
+                  ),
 
-                // username
-                MyTextBox(
-                  sectionName: 'Username',
-                  text: userData['username'],
-                  onPressed: () => editField('username'),
-                ),
+                  // username
+                  MyTextBox(
+                    sectionName: 'Username',
+                    text: userData['username'],
+                    onPressed: () => editField('username'),
+                  ),
 
-                // bio
-                MyTextBox(
-                  sectionName: 'Bio',
-                  text: userData['bio'],
-                  onPressed: () => editField('bio'),
-                ),
+                  // bio
+                  MyTextBox(
+                    sectionName: 'Bio',
+                    text: userData['bio'],
+                    onPressed: () => editField('bio'),
+                  ),
 
-                // user post
-              ],
+                  // user post
+                ],
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error${snapshot.error}'),
+              );
+            }
+
+            return const Center(
+              child: CircularProgressIndicator(),
             );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error' + snapshot.error.toString()),
-            );
-          }
-
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+          },
+        ),
       ),
       // sign out button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _signOutUser();
         },
-        backgroundColor: Colors.white,
-        child: const Icon(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: Icon(
           Icons.logout,
-          color: Colors.black,
+          color:
+              Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.black,
         ),
       ),
     );

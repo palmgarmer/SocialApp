@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:social_app/Screen/auth/authPage.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:social_app/theme/darkTheme.dart';
+import 'package:social_app/theme/lightTheme.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -16,10 +18,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeMode _themeMode = ThemeMode.system;
+    const ThemeMode themeMode = ThemeMode.system;
 
-    return const MaterialApp(
-      home: AuthPage(),
+    return MaterialApp(
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: themeMode,
+      home: const AuthPage(),
       debugShowCheckedModeBanner: false,
     );
   }

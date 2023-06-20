@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:social_app/Screen/auth/fogotPasswordPage.dart';
 import 'package:social_app/components/myButton.dart';
 import 'package:social_app/components/myTextFromField.dart';
 import 'package:social_app/components/squreTile.dart';
@@ -115,7 +116,16 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return const ForgotPasswordPage();
+                                },
+                              ),
+                            );
+                          },
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(

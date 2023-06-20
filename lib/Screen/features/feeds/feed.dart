@@ -56,7 +56,7 @@ class FeedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.grey[200],
+        color: Theme.of(context).colorScheme.background,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
