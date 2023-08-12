@@ -104,6 +104,10 @@ class ProfilePage extends StatelessWidget {
                 : Colors.white,
         child: Column(
           children: [
+            SizedBox(
+              height: 20,
+            ),
+
             // Profile Pic
             Container(
               padding: const EdgeInsets.only(bottom: 10),
